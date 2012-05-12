@@ -1,0 +1,8 @@
+name: ManualGrassSpread
+main: eu.ha3.bukkit.manualgrass.Plugin
+version: 1
+description: >
+    Manually spread grass
+commands:
+# PERMISSIONS
+#   manualgrassspread.simple - Permission to use simple manual grass spread
