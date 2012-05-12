@@ -27,41 +27,68 @@ public class Plugin extends JavaPlugin implements Listener
 	private boolean[][][] dirt;
 	private boolean[][][] apply;
 	
+	private boolean canBeUsed;
+	
 	@Override
 	public void onEnable()
 	{
+		canBeUsed = false;
+		updateFromConfig();
+		
+		getServer().getPluginManager().registerEvents(this, this);
+		
+	}
+	
+	private void updateFromConfig()
+	{
+		canBeUsed = false;
+		
 		itemID = this.getConfig().getInt("grass_spread.item");
 		radius = this.getConfig().getInt("grass_spread.radius");
 		height_span = this.getConfig().getInt("grass_spread.height_of_split");
-		diameter = radius * 2;
-		radius_squared = radius * radius;
 		
-		stencil = new boolean[diameter + 1][diameter + 1];
-		grass = new boolean[diameter + 1][diameter + 1][1 + height_span * 2];
-		dirt = new boolean[diameter + 1][diameter + 1][1 + height_span * 2];
-		apply = new boolean[diameter + 1][diameter + 1][1 + height_span * 2];
+		canBeUsed = ((radius >= 0) && (height_span >= 0));
 		
-		for (int i = -radius; i <= radius; i++)
+		if (canBeUsed)
 		{
-			for (int j = -radius; j <= radius; j++)
+			diameter = radius * 2;
+			radius_squared = radius * radius;
+			
+			stencil = new boolean[diameter + 1][diameter + 1];
+			grass = new boolean[diameter + 1][diameter + 1][1 + height_span * 2];
+			dirt = new boolean[diameter + 1][diameter + 1][1 + height_span * 2];
+			apply = new boolean[diameter + 1][diameter + 1][1 + height_span * 2];
+			
+			for (int i = -radius; i <= radius; i++)
 			{
-				if ((i * i + j * j) <= radius_squared)
+				for (int j = -radius; j <= radius; j++)
 				{
-					stencil[i + radius][j + radius] = true;
+					if ((i * i + j * j) <= radius_squared)
+					{
+						stencil[i + radius][j + radius] = true;
+						
+					}
 					
 				}
 				
 			}
 			
 		}
-		
-		getServer().getPluginManager().registerEvents(this, this);
+		else
+		{
+			this.getLogger()
+					.severe("Plugin config file has invalid values (This may be due to negative values).");
+			
+		}
 		
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void playerInteractEvent(PlayerInteractEvent event)
 	{
+		if (!canBeUsed)
+			return;
+		
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 		
