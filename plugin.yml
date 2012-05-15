@@ -4,5 +4,10 @@ version: 1
 description: >
     Manually spread grass
 commands:
+    grasstriple:
+        description: Using the tool covers triple the normal radius.
+        permission: manualgrassspread.triple
 # PERMISSIONS
-#   manualgrassspread.simple - Permission to use simple manual grass spread
+#   manualgrassspread.simple - Permission to use manual grass spread (simple mode)
+#   manualgrassspread.triple - Permission to use manual grass spread with triple the normal radius.
+#                                (Requires permission to use simple mode)
