@@ -44,6 +44,33 @@ public class Plugin extends JavaPlugin implements Listener
 		
 	}
 	
+	public void setPlayerTripleModeEnabled(Player ply, boolean enable)
+	{
+		if (enable)
+		{
+			if (ply.hasPermission("manualgrassspread.triple"))
+			{
+				tripleUsers.add(ply);
+				
+			}
+			
+		}
+		else
+		{
+			// No need to check if the player has permission before removing it
+			tripleUsers.remove(ply);
+			
+		}
+		
+	}
+	
+	public boolean isPlayerTripleModeEnabled(Player ply)
+	{
+		return ply.hasPermission("manualgrassspread.triple")
+				&& tripleUsers.contains(ply);
+		
+	}
+	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void playerInteractEvent(PlayerInteractEvent event)
 	{
@@ -71,11 +98,10 @@ public class Plugin extends JavaPlugin implements Listener
 		GrassSpread spreader;
 		
 		// If the user can use Triple mode and has it enabled
-		if (ply.hasPermission("manualgrassspread.triple")
-				&& tripleUsers.contains(ply))
+		// Do the double check just in case an user loses permission while it's being used.
+		if (isPlayerTripleModeEnabled(ply))
 		{
 			spreader = tripleSpreader;
-			spreader = simpleSpreader;
 			
 		}
 		// If the user is using the simple mode
