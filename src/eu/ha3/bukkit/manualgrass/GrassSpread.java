@@ -337,80 +337,8 @@ public class GrassSpread
 	
 	private boolean changeToGrass(Player ply, World world, int x, int y, int z)
 	{
-		/*
-		 *
-		00078         CraftWorld craftWorld = ((WorldServer) world).getWorld();
-		00079         CraftServer craftServer = ((WorldServer) world).getServer();
-		00080 
-		00081         Player player = (who == null) ? null : (Player) who.getBukkitEntity();
-		00082         CraftItemStack itemInHand = new CraftItemStack(itemstack);
-		00083 
-		00084         Block blockClicked = craftWorld.getBlockAt(clickedX, clickedY, clickedZ);
-		00085         Block placedBlock = replacedBlockState.getBlock();
-		00086 
-		00087         boolean canBuild = canBuild(craftWorld, player, placedBlock.getX(), placedBlock.getZ());
-		00088 
-		00089         BlockPlaceEvent event = new BlockPlaceEvent(placedBlock, replacedBlockState, blockClicked, itemInHand, player, canBuild);
-		00090         craftServer.getPluginManager().callEvent(event);
-		00091 
-		00092         return event;
-		*/
-		
-		//http://www.pastie.org/2715934/wrap
-		
-		/*
-		g`"index 5662274..8f64307 100644
-		--- "a/C:\\Users\\HellFire\\AppData\\Local\\Temp\\Spo207E.java"
-		+++ "b/C:\\Users\\HellFire\\Workspace\\Git\\Spout\\src\\org\\getspout\\spout\\SpoutPlayerListener.java"
-		@@ -22,8 +22,10 @@ import org.bukkit.Bukkit;
-		import org.bukkit.Location;
-		import org.bukkit.Material;
-		import org.bukkit.block.Block;
-		+import org.bukkit.block.BlockState;
-		import org.bukkit.entity.Player;
-		import org.bukkit.event.block.Action;
-		+import org.bukkit.event.block.BlockPlaceEvent;
-		import org.bukkit.event.player.PlayerEvent;
-		import org.bukkit.event.player.PlayerInteractEvent;
-		import org.bukkit.event.player.PlayerJoinEvent;
-		@@ -144,13 +146,32 @@ public class SpoutPlayerListener extends PlayerListener{
-					if (newBlockId != 0 ) {
-						Block block = event.getClickedBlock().getRelative(event.getBlockFace());
-						CustomBlock cb = MaterialData.getCustomBlock(damage);
-		+						BlockState oldState = block.getState();
-						block.setTypeIdAndData(cb.getBlockId(), (byte)(newMetaData & 0xF), true);
-		-						mm.overrideBlock(block, cb);
-		+						// TODO: canBuild should be set properly, CraftEventFactory.canBuild() would do this... 
-		+						//       but it's private so... here it is >.>
-		+						int spawnRadius = Bukkit.getServer().getSpawnRadius();
-		+						boolean canBuild = false;
-		+						if (spawnRadius <= 0 || player.isOp()) { // Fast checks
-		+							canBuild = true;
-		+						} else if (Math.max(block.getX(), block.getZ()) > spawnRadius) { // Slower check
-		+							canBuild = true;
-		+						}
-		+						
-		+						BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, oldState, event.getClickedBlock(), item, player, canBuild);
-						
-		-						if(item.getAmount() == 1) {
-		-							event.getPlayer().setItemInHand(null);
-		+						if (!placeEvent.isCancelled() && placeEvent.canBuild()) {
-		+							// Yay, do the override work
-		+							mm.overrideBlock(block, cb);
-		+							
-		+							if(item.getAmount() == 1) {
-		+								event.getPlayer().setItemInHand(null);
-		+							} else {
-		+								item.setAmount(item.getAmount() - 1);
-		+							}
-						} else {
-		-							item.setAmount(item.getAmount() - 1);
-		+							// Event cancelled or can't build
-		+							block.setTypeIdAndData(oldState.getTypeId(), oldState.getRawData(), true);
-						}
-					}
-				}
-		 */
+		// The replacement-and-revert logic is based off:
+		// http://www.pastie.org/2715934/wrap
 		
 		Block block = world.getBlockAt(x, y, z);
 		
