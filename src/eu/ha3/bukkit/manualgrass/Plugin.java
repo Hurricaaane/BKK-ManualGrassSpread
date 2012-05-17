@@ -26,6 +26,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Plugin extends JavaPlugin implements Listener
@@ -46,6 +47,10 @@ public class Plugin extends JavaPlugin implements Listener
 		
 		getServer().getPluginManager().registerEvents(this, this);
 		
+		String commandName = getDescription().getCommands().keySet().iterator()
+				.next();
+		getCommand(commandName).setExecutor(new GrassTripleExecutor(this));
+		
 	}
 	
 	private void updateFromConfig()
@@ -61,11 +66,17 @@ public class Plugin extends JavaPlugin implements Listener
 		
 	}
 	
+	/**
+	 * Changes the triple mode of a player if it can be done.
+	 * 
+	 * @param ply
+	 * @param enable
+	 */
 	public void setPlayerTripleModeEnabled(Player ply, boolean enable)
 	{
 		if (enable)
 		{
-			if (ply.hasPermission("manualgrassspread.triple"))
+			if (canPlayerTripleMode(ply))
 			{
 				tripleUsers.add(ply);
 				
@@ -81,10 +92,27 @@ public class Plugin extends JavaPlugin implements Listener
 		
 	}
 	
+	/**
+	 * If the player can have triple mode.
+	 * 
+	 * @param ply
+	 * @param enable
+	 */
+	public boolean canPlayerTripleMode(Player ply)
+	{
+		return ply.hasPermission("manualgrassspread.triple");
+		
+	}
+	
+	/**
+	 * If the player has triple mode enabled.
+	 * 
+	 * @param ply
+	 * @return
+	 */
 	public boolean isPlayerTripleModeEnabled(Player ply)
 	{
-		return ply.hasPermission("manualgrassspread.triple")
-				&& tripleUsers.contains(ply);
+		return canPlayerTripleMode(ply) && tripleUsers.contains(ply);
 		
 	}
 	
@@ -128,6 +156,13 @@ public class Plugin extends JavaPlugin implements Listener
 			
 		}
 		spreader.spreadFromLocation(event.getClickedBlock().getLocation(), ply);
+		
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void playerInteractEvent(PlayerJoinEvent event)
+	{
+		setPlayerTripleModeEnabled(event.getPlayer(), false);
 		
 	}
 	
