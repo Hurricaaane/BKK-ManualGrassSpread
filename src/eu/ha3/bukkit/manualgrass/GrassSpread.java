@@ -113,12 +113,28 @@ public class GrassSpread
 		
 	}
 	
+	/**
+	 * Spreads from location using the zero mask (most restrictive).
+	 * 
+	 * @param location
+	 * @param ply
+	 */
 	public void spreadFromLocation(Location location, Player ply)
 	{
 		spreadFromLocation(location, ply, 0);
 		
 	}
 	
+	/**
+	 * Spreads from location.
+	 * 
+	 * @param location
+	 *            The location to change.
+	 * @param ply
+	 *            The player responsible for the spread.
+	 * @param bitmask
+	 *            The options bitmask. Make use of this class' FLAG_ flags.
+	 */
 	public void spreadFromLocation(Location location, Player ply, int bitmask)
 	{
 		if (!canBeUsed)
@@ -354,6 +370,24 @@ public class GrassSpread
 		
 	}
 	
+	/**
+	 * Change a block to grass. Technically it pushes an event to the event
+	 * system, so the event is processed by normal means as if the player
+	 * modified the blocks. If the event is cancelled or the action didn't
+	 * occur, <strong>false</strong> is returned.
+	 * 
+	 * @param ply
+	 *            The player responsible for the edit.
+	 * @param world
+	 *            The world to edit from.
+	 * @param x
+	 *            Block X coordinate.
+	 * @param y
+	 *            Block Y coordinate.
+	 * @param z
+	 *            Block Z coordinate.
+	 * @return Did it work?
+	 */
 	private boolean changeToGrass(Player ply, World world, int x, int y, int z)
 	{
 		// The replacement-and-revert logic is based off:
