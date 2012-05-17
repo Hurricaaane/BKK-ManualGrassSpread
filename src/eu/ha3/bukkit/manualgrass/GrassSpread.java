@@ -28,6 +28,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class GrassSpread
 {
+	public static final int FLAG_ALLOWWATER = 1 << 0;
+	public static final int FLAG_ALLOWARTIFICIALLIGHT = 1 << 1;
+	
 	private int radius;
 	private int radius_squared;
 	private int height_span;
@@ -112,6 +115,12 @@ public class GrassSpread
 	
 	public void spreadFromLocation(Location location, Player ply)
 	{
+		spreadFromLocation(location, ply, 0);
+		
+	}
+	
+	public void spreadFromLocation(Location location, Player ply, int bitmask)
+	{
 		if (!canBeUsed)
 			return;
 		
@@ -123,6 +132,9 @@ public class GrassSpread
 		
 		boolean hasGrass = false;
 		boolean hasDirt = false;
+		
+		boolean canAlight = (bitmask & FLAG_ALLOWARTIFICIALLIGHT) != 0;
+		boolean canEvenWithWater = (bitmask & FLAG_ALLOWWATER) != 0;
 		
 		/**
 		 * Find grass and dirt in the vicinity.
@@ -168,8 +180,15 @@ public class GrassSpread
 						 * make a console command for that.
 						 */
 						Block block = world.getBlockAt(x, y, z);
-						//Block blockAbove = block.getRelative(BlockFace.UP);
-						if ((block.getRelative(BlockFace.UP).getLightFromSky() > 0) /*&& !block.getRelative(BlockFace.UP).isLiquid()*/)
+						Block blockAbove = block.getRelative(BlockFace.UP);
+						
+						boolean hasSunlight = blockAbove.getLightFromSky() > 0;
+						boolean hasAlight = blockAbove.getLightFromBlocks() > 0;
+						
+						boolean hasNoWater = !blockAbove.isLiquid();
+						
+						if ((hasSunlight || (canAlight && hasAlight))
+								&& (canEvenWithWater || hasNoWater))
 						{
 							if (block.getType() == Material.GRASS)
 							{
