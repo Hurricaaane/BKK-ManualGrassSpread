@@ -190,10 +190,7 @@ public class GrassSpread
 						 * spread in the shadow of other objects as long as
 						 * there is sky light.<br>
 						 * <br>
-						 * This also includes blocks that are underwater. The
-						 * code below has been commented out because it's easier
-						 * to paint water springs this way. Could eventually
-						 * make a console command for that.
+						 * Also, exclude blocks covered by liquid.
 						 */
 						Block block = world.getBlockAt(x, y, z);
 						Block blockAbove = block.getRelative(BlockFace.UP);
