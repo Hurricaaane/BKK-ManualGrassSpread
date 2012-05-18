@@ -1,5 +1,5 @@
 name: ManualGrassSpread
-main: eu.ha3.bukkit.manualgrass.Plugin
+main: eu.ha3.bukkit.manualgrassspread.Plugin
 version: 2
 description: >
     Manually spread grass
