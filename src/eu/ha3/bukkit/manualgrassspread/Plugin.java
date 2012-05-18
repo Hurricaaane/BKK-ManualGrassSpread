@@ -1,4 +1,4 @@
-package eu.ha3.bukkit.manualgrass;
+package eu.ha3.bukkit.manualgrassspread;
 
 /*
            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,7 +15,7 @@ as the name is changed.
 
  0. You just DO WHAT THE FUCK YOU WANT TO.
 
- */
+*/
 
 import java.util.HashSet;
 import java.util.Set;
